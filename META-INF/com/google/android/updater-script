@@ -1,0 +1,76 @@
+ui_print(" ");
+ui_print(" Honeycomb SGT ");
+ui_print(" ");
+
+ui_print("Mounting system...");
+run_program("/sbin/busybox", "mount", "/system");
+run_program("/sbin/busybox", "mount", "/datadata");
+run_program("/sbin/busybox", "mount", "/data");
+run_program("/sbin/busybox", "mount", "/cache");
+run_program("/sbin/busybox", "mount", "/sdcard");
+ui_print(" ");
+
+ui_print("Preparing Installation...");
+delete_recursive("/system");
+delete_recursive("/cache");
+delete_recursive("/data");
+delete_recursive("/datadata");
+delete_recursive("/sdcard/DCIM/.thumbnails");
+delete_recursive("/sdcard/.android_secure");
+delete_recursive("/sdcard/Android");
+delete_recursive("/sdcard/svox");
+ui_print(" ");
+
+ui_print("Installing New System...");
+package_extract_dir("system", "/system");
+package_extract_dir("updates", "/tmp");
+ui_print(" ");
+
+ui_print("Creating Symlinks and Setting Permissions...");
+ui_print(" ");
+
+symlink("toolbox","/system/bin/cat","/system/bin/chmod","/system/bin/chown","/system/bin/cmp","/system/bin/date","/system/bin/dd",
+        "/system/bin/df","/system/bin/dmesg","/system/bin/getevent","/system/bin/getprop","/system/bin/hd","/system/bin/id",
+        "/system/bin/ifconfig","/system/bin/iftop","/system/bin/insmod","/system/bin/ioctl","/system/bin/ionice","/system/bin/kill",
+        "/system/bin/ln","/system/bin/log","/system/bin/ls","/system/bin/lsmod","/system/bin/mkdir","/system/bin/mount",
+        "/system/bin/mv","/system/bin/nandread","/system/bin/netstat","/system/bin/newfs_msdos","/system/bin/notify",
+        "/system/bin/printenv", "/system/bin/ps","/system/bin/reboot","/system/bin/renice","/system/bin/rm","/system/bin/rmdir",
+        "/system/bin/rmmod","/system/bin/route","/system/bin/schedtop","/system/bin/sendevent","/system/bin/setconsole",
+        "/system/bin/setprop","/system/bin/sleep","/system/bin/smd","/system/bin/start","/system/bin/stop","/system/bin/sync",
+        "/system/bin/top","/system/bin/umount","/system/bin/vmstat","/system/bin/watchprops","/system/bin/wipe");
+
+set_perm_recursive(0, 0, 0755, 0644, "system");
+set_perm_recursive(0, 2000, 0755, 0755, "system/bin");
+set_perm_recursive(0, 0, 0755, 0755, "system/etc");
+set_perm(0, 3003, 02755, "/system/bin/netcfg");
+set_perm(0, 3004, 02755, "/system/bin/ping");
+set_perm_recursive(1002, 1002, 0755, 0440, "system/etc/bluetooth");
+set_perm(0, 0, 0755, "/system/etc/bluetooth");
+set_perm(1002, 1002, 0440, "/system/etc/dbus.conf");
+set_perm(1014, 2000, 0550, "/system/etc/dhcpcd/dhcpcd-run-hooks");
+set_perm(1000, 1000, 0755, "/system/etc/wifi/wpa_supplicant.conf");
+set_perm(0, 2000, 0550, "/system/etc/init.goldfish.sh");
+set_perm_recursive(0, 0, 0777, 0777, "system/etc/init.d");
+set_perm(0, 0, 06755, "/system/bin/sqlite3");
+set_perm(0, 0, 04755, "/system/xbin/su");
+set_perm(0, 0, 04755, "/system/xbin/busybox");
+set_perm_recursive(0, 0, 0777, 0777, "/data");
+set_perm(1000, 1000, 0771, "/data/app");
+symlink("/system/xbin/su", "/system/bin/su");
+
+run_program("/system/xbin/busybox", "--install", "-s", "/system/xbin");
+
+ui_print("Installing Kernel...");
+ui_print(" ");
+set_perm(0, 0, 0755, "/tmp/redbend_ua");
+run_program("/tmp/redbend_ua", "restore", "/tmp/zImage", "/dev/block/bml7");
+run_program("clean");
+
+ui_print("Unmounting system...");
+unmount("/system");
+unmount("/data");
+unmount("/datadata");
+unmount("/cache");
+unmount("/sdcard");
+ui_print(" ");
+ui_print(" You May Reboot Now ");
