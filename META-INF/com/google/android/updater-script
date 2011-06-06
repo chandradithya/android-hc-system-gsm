@@ -52,11 +52,11 @@ set_perm(1000, 1000, 0755, "/system/etc/wifi/wpa_supplicant.conf");
 set_perm(0, 2000, 0550, "/system/etc/init.goldfish.sh");
 set_perm_recursive(0, 0, 0777, 0777, "system/etc/init.d");
 set_perm(0, 0, 06755, "/system/bin/sqlite3");
-set_perm(0, 0, 04755, "/system/xbin/su");
-set_perm(0, 0, 04755, "/system/xbin/busybox");
+set_perm(0, 0, 06755, "/system/bin/su");
+set_perm(0, 0, 06755, "/system/xbin/busybox");
 set_perm_recursive(0, 0, 0777, 0777, "/data");
 set_perm(1000, 1000, 0771, "/data/app");
-symlink("/system/xbin/su", "/system/bin/su");
+symlink("/system/bin/su", "/system/xbin/su");
 
 run_program("/system/xbin/busybox", "--install", "-s", "/system/xbin");
 
